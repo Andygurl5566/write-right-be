@@ -1,5 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import text
+from database import engine
 
 # Initialize the FastAPI application instance
 app = FastAPI()
@@ -22,3 +24,26 @@ app.add_middleware(
 @app.get("/")
 def read_root():
     return {"status": "success", "message": "FastAPI is initialized!"}
+
+
+# Test connection with Supabase | 
+# To test connection, start BE using fastapi dev main.py command, 
+# navigate to http://127.0.0.1:8000/db-test in browser 
+# successful response will show {"status":"success","message":"FastAPI is initialized!"}
+
+@app.get("/db-test")
+def database_test():
+    try:
+        with engine.connect() as connection:
+            result = connection.execute(text("SELECT 1"))
+            
+        return {
+            "status": "connected",
+            "result": result.scalar()
+        }
+
+    except Exception as e:
+        return {
+            "status": "failed",
+            "error": "Database connection failed" 
+        }
