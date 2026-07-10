@@ -8,8 +8,7 @@ AI_API_KEY = os.getenv("AI_API_KEY")
 AI_MODEL = os.getenv("AI_MODEL", "gpt-4o-mini")
 
 required = {
-    "DATABASE_URL": DATABASE_URL,
-    "AI_API_KEY": AI_API_KEY,
+    "DATABASE_URL": DATABASE_URL,   
 }
 
 missing = [name for name, value in required.items() if not value]
