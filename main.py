@@ -1,10 +1,13 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
-from database import engine
+from database import Base, engine
+import models
 
 # Initialize the FastAPI application instance
 app = FastAPI()
+
+Base.metadata.create_all(bind=engine)
 
 # CORS - # Allows React frontend (running on a different URL/port) to safely communicate with this FastAPI backend.
 origins = [
