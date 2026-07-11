@@ -29,7 +29,7 @@ def read_root():
 # Test connection with Supabase | 
 # To test connection, start BE using fastapi dev main.py command, 
 # navigate to http://127.0.0.1:8000/db-test in browser 
-# successful response will show {"status":"success","message":"FastAPI is initialized!"}
+# successful response will show {"status":"connected","result":1}
 
 @app.get("/db-test")
 def database_test():
