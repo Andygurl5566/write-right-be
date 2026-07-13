@@ -1,13 +1,12 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy import text
-from database import Base, engine
-import models
+from ai_service import correct_text
+from pydantic import BaseModel
+
+
 
 # Initialize the FastAPI application instance
 app = FastAPI()
-
-Base.metadata.create_all(bind=engine)
 
 # CORS - # Allows React frontend (running on a different URL/port) to safely communicate with this FastAPI backend.
 origins = [
@@ -23,30 +22,24 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+class CorrectionRequest(BaseModel):
+    text: str
+
+
 # Defines a root path GET endpoint
 @app.get("/")
 def read_root():
     return {"status": "success", "message": "FastAPI is initialized!"}
 
+# Route for submitting text for correction
+@app.post("/correct")
+async def correct(request: CorrectionRequest):
 
-# Test connection with Supabase | 
-# To test connection, start BE using fastapi dev main.py command, 
-# navigate to http://127.0.0.1:8000/db-test in browser 
-# successful response will show {"status":"connected","result":1}
+    print("Received:", request.text)
 
-@app.get("/db-test")
-def database_test():
-    try:
-        with engine.connect() as connection:
-            result = connection.execute(text("SELECT 1"))
-            
-        return {
-            "status": "connected",
-            "result": result.scalar()
-        }
+    corrected = await correct_text(request.text)
 
-    except Exception as e:
-        return {
-            "status": "failed",
-            "error": "Database connection failed" 
-        }
+    print("Model returned:", corrected)
+
+    return corrected
