@@ -73,8 +73,18 @@ Rules:
 
     res = response.choices[0].message.content
 
+
 # Handle cases where the AI returns invalid JSON by raising a ValueError with a descriptive message.
     try:
-        return json.loads(res)
+        data = json.loads(res)
     except json.JSONDecodeError:
         raise ValueError("AI returned invalid JSON")
+    
+  # Add indices for frontend highlighting and strikethrough. This is done by finding the start and end indices of each mistake in the original text.
+    for mistake in data["mistakes"]:
+        start = text.find(mistake["original"])
+
+        mistake["start"] = start
+        mistake["end"] = start + len(mistake["original"])
+
+    return data
