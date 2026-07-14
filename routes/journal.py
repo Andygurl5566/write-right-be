@@ -1,14 +1,15 @@
 from fastapi import APIRouter
 from services.ai_service import correct_text
 from services.correction_service import add_indices
+from schemas import JournalAnalysisRequest, JournalAnalysisResponse
 
 router = APIRouter()
 
 
-@router.post("/analyze")
-async def analyze_journal(data: dict):
+@router.post("/analyze", response_model=JournalAnalysisResponse)
+async def analyze_journal(data: JournalAnalysisRequest):
 
-    text = data["text"]
+    text = data.text
 
     # AI anlysis of the text
     analysis = await correct_text(text)
