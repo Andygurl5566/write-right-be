@@ -1,7 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from ai_service import correct_text
+from services.ai_service import correct_text
 from pydantic import BaseModel
+from routes import journal
 
 
 
@@ -27,19 +28,15 @@ class CorrectionRequest(BaseModel):
     text: str
 
 
+# Include the journal router for handling journal-related endpoints
+# journal/analyze endpoint for journal corrections
+app.include_router(
+    journal.router,
+    prefix="/journal"
+)
+
+
 # Defines a root path GET endpoint
 @app.get("/")
 def read_root():
     return {"status": "success", "message": "FastAPI is initialized!"}
-
-# Route for submitting text for correction
-@app.post("/correct")
-async def correct(request: CorrectionRequest):
-
-    print("Received:", request.text)
-
-    corrected = await correct_text(request.text)
-
-    print("Model returned:", corrected)
-
-    return corrected
