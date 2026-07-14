@@ -80,4 +80,6 @@ Rules:
     except json.JSONDecodeError:
         raise ValueError("AI returned invalid JSON")
 
+    data['original_text'] = text
+
     return data
