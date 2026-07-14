@@ -7,8 +7,9 @@ class JournalAnalysisRequest(BaseModel):
 
 class MistakeResponse(BaseModel):
     original: str
-    corrected: str
+    corrected_text: str
     explanation: str
+    category: str
     start: int | None = None
     end: int | None = None
 
