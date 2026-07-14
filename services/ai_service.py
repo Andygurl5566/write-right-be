@@ -37,7 +37,7 @@ The JSON must use exactly this structure:
     "mistakes": [
         {
             "original": "The exact incorrect text from the user's input.",
-            "corrected_text": "The corrected version of that text.",
+            "corrected": "The corrected version of that text.",
             "explanation": "Explain in one or two concise sentences suitable for a language learner why the original was incorrect.",
             "category": "verb_conjugation"
         }
@@ -48,7 +48,7 @@ Rules:
 - "text" must contain the complete corrected text.
 - Each grammar mistake must be a separate object in the "mistakes" array.
 - "original" must exactly match the incorrect text in the user's input.
-- "corrected_text" must contain the replacement text.
+- "corrected" must contain the replacement text.
 - "explanation" must clearly explain the grammar rule or reason for the correction.
 - Preserve the language of the user's original text.
 - Do not translate the text.
@@ -79,5 +79,7 @@ Rules:
         data = json.loads(res)
     except json.JSONDecodeError:
         raise ValueError("AI returned invalid JSON")
+
+    data['original_text'] = text
 
     return data
