@@ -1,0 +1,91 @@
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
+
+from database import get_db
+from models import Flashcard
+from schemas import (
+    FlashcardCreate,
+    FlashcardResponse,
+    FlashcardUpdate,
+)
+
+router = APIRouter()
+
+
+@router.post("", response_model=FlashcardResponse, status_code=201)
+def create_flashcard(
+    data: FlashcardCreate,
+    db: Session = Depends(get_db),
+):
+    flashcard = Flashcard(
+        front=data.front,
+        back=data.back,
+        language=data.language,
+    )
+
+    db.add(flashcard)
+    db.commit()
+    db.refresh(flashcard)
+
+    return flashcard
+
+
+@router.get("", response_model=list[FlashcardResponse])
+def get_flashcards(
+    db: Session = Depends(get_db),
+):
+    return (
+        db.query(Flashcard)
+        .order_by(Flashcard.created_at.desc())
+        .all()
+    )
+
+
+@router.patch("/{flashcard_id}", response_model=FlashcardResponse)
+def update_flashcard(
+    flashcard_id: int,
+    data: FlashcardUpdate,
+    db: Session = Depends(get_db),
+):
+    flashcard = (
+        db.query(Flashcard)
+        .filter(Flashcard.id == flashcard_id)
+        .first()
+    )
+
+    if flashcard is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Flashcard not found",
+        )
+
+    update_data = data.model_dump(exclude_unset=True)
+
+    for key, value in update_data.items():
+        setattr(flashcard, key, value)
+
+    db.commit()
+    db.refresh(flashcard)
+
+    return flashcard
+
+
+@router.delete("/{flashcard_id}", status_code=204)
+def delete_flashcard(
+    flashcard_id: int,
+    db: Session = Depends(get_db),
+):
+    flashcard = (
+        db.query(Flashcard)
+        .filter(Flashcard.id == flashcard_id)
+        .first()
+    )
+
+    if flashcard is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Flashcard not found",
+        )
+
+    db.delete(flashcard)
+    db.commit()

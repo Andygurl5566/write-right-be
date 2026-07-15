@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from services.ai_service import correct_text
 from pydantic import BaseModel
-from routes import journal
+from routes import journal, flashcards
 
 
 
@@ -32,7 +32,14 @@ class CorrectionRequest(BaseModel):
 # journal/analyze endpoint for journal corrections
 app.include_router(
     journal.router,
-    prefix="/journal"
+    prefix="/journal",
+    tags=["Journal"],
+)
+
+app.include_router(
+    flashcards.router,
+    prefix="/flashcards",
+    tags=["Flashcards"],
 )
 
 
