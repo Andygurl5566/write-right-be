@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from pydantic import BaseModel
 
 
@@ -17,3 +19,15 @@ class MistakeResponse(BaseModel):
 class JournalAnalysisResponse(BaseModel):
     text: str
     mistakes: list[MistakeResponse]
+
+
+class JournalEntryResponse(BaseModel):
+    id: int
+    original_text: str
+    corrected_text: str
+    mistakes: list[MistakeResponse]
+    created_at: datetime
+
+    model_config = {
+        "from_attributes": True,
+    }
