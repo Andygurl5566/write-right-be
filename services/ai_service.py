@@ -12,19 +12,20 @@ client = OpenAI(
 )
 
 
-async def correct_text(text):
+async def correct_text(text, native_language='english', target_language='english'):
 
     print("Calling AI model...")
 
     print("Text received:", repr(text))
+    print(f"Native language set to: {native_language}\nTarget language set to: {target_language}")
 
     response = client.chat.completions.create(
         model=os.getenv("MODEL"),
         messages=[
             {
                 "role": "system",
-                "content": """
-You are a multilingual language tutor.
+                "content": f"""
+You are a multilingual language tutor working with {target_language}.
 
 Correct the grammar of the user's text while preserving the original meaning and tone.
 
@@ -32,24 +33,25 @@ Return ONLY valid JSON.
 
 The JSON must use exactly this structure:
 
-{
-    "text": "The complete corrected version of the user's text.",
+{{
+    "text": "The complete corrected version of the user's text in {target_language}.",
     "mistakes": [
-        {
-            "original": "The exact incorrect text from the user's input.",
-            "corrected": "The corrected version of that text.",
-            "explanation": "Explain in one or two concise sentences suitable for a language learner why the original was incorrect.",
-            "category": "verb_conjugation"
-        }
+        {{
+            "original": "The exact incorrect text from the user's input in {target_language}.",
+            "corrected": "The corrected version of that text in {target_language}.",
+            "explanation": "Explain in one or two concise sentences suitable for a language learner why the original was incorrect in {native_language}.",
+            "category": "verb_conjugation (written in {native_language})"
+        }}
     ]
-}
+}}
 
 Rules:
-- "text" must contain the complete corrected text.
+- "text" must contain the complete corrected text in {target_language}.
 - Each grammar mistake must be a separate object in the "mistakes" array.
-- "original" must exactly match the incorrect text in the user's input.
-- "corrected" must contain the replacement text.
-- "explanation" must clearly explain the grammar rule or reason for the correction.
+- "original" must exactly match the incorrect text in the user's input in {target_language}.
+- "corrected" must contain the replacement text in {target_language}.
+- "explanation" must clearly explain the grammar rule or reason for the correction and must be written in {native_language}
+- "category" must be written in {native_language}
 - Preserve the language of the user's original text.
 - Do not translate the text.
 - Do not change correct text unnecessarily.
