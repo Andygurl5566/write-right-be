@@ -31,3 +31,26 @@ class JournalEntryResponse(BaseModel):
     model_config = {
         "from_attributes": True,
     }
+class FlashcardCreate(BaseModel):
+    front: str
+    back: str
+    language: str = "German"
+
+
+class FlashcardUpdate(BaseModel):
+    front: str | None = None
+    back: str | None = None
+    language: str | None = None
+    mastered: bool | None = None
+
+
+class FlashcardResponse(BaseModel):
+    id: int
+    front: str
+    back: str
+    language: str
+    mastered: bool
+
+    model_config = {
+        "from_attributes": True,
+    }

@@ -5,7 +5,7 @@ from pydantic import BaseModel
 
 from database import Base, engine
 import models
-from routes import journal
+from routes import journal, flashcards
 
 
 
@@ -37,7 +37,14 @@ class CorrectionRequest(BaseModel):
 # journal/analyze endpoint for journal corrections
 app.include_router(
     journal.router,
-    prefix="/journal"
+    prefix="/journal",
+    tags=["Journal"],
+)
+
+app.include_router(
+    flashcards.router,
+    prefix="/flashcards",
+    tags=["Flashcards"],
 )
 
 
