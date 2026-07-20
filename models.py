@@ -54,15 +54,50 @@ class Message(Base):
     )
 
 
+class FlashcardSet(Base):
+    __tablename__ = "flashcard_sets"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, nullable=False)
+    language = Column(String, nullable=False)
+    source_type = Column(String, nullable=False)
+    journal_entry_id = Column(Integer, nullable=True)
+
+    created_at = Column(DateTime(timezone=True), nullable=False, default=utc_now)
+
+    flashcards = relationship(
+        "Flashcard",
+        back_populates="flashcard_set",
+        cascade="all, delete-orphan",
+    )
+
+
 class Flashcard(Base):
     __tablename__ = "flashcards"
 
     id = Column(Integer, primary_key=True, index=True)
+
+    set_id = Column(
+        Integer,
+        ForeignKey("flashcard_sets.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+
     front = Column(Text, nullable=False)
     back = Column(Text, nullable=False)
     language = Column(String, nullable=False, default="German")
     mastered = Column(Boolean, nullable=False, default=False)
-    created_at = Column(DateTime(timezone=True), nullable=False, default=utc_now)
+    created_at = Column(
+        DateTime(timezone=True),
+        nullable=False,
+        default=utc_now,
+    )
+
+    flashcard_set = relationship(
+        "FlashcardSet",
+        back_populates="flashcards",
+    )
 
 
 class JournalEntry(Base):
