@@ -2,12 +2,13 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from database import get_db
-from models import Flashcard
+from models import Flashcard, FlashcardSet
 from schemas import (
     FlashcardCreate,
     FlashcardResponse,
-    FlashcardUpdate,
+    FlashcardUpdate
 )
+
 
 router = APIRouter()
 
@@ -17,7 +18,20 @@ def create_flashcard(
     data: FlashcardCreate,
     db: Session = Depends(get_db),
 ):
+    flashcard_set = (
+        db.query(FlashcardSet)
+        .filter(FlashcardSet.id == data.set_id)
+        .first()
+    )
+
+    if flashcard_set is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Flashcard set not found",
+        )
+
     flashcard = Flashcard(
+        set_id=data.set_id,
         front=data.front,
         back=data.back,
         language=data.language,
@@ -28,7 +42,6 @@ def create_flashcard(
     db.refresh(flashcard)
 
     return flashcard
-
 
 @router.get("", response_model=list[FlashcardResponse])
 def get_flashcards(

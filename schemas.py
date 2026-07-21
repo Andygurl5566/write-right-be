@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class JournalAnalysisRequest(BaseModel):
@@ -32,6 +32,7 @@ class JournalEntryResponse(BaseModel):
         "from_attributes": True,
     }
 class FlashcardCreate(BaseModel):
+    set_id: int
     front: str
     back: str
     language: str = "German"
@@ -46,10 +47,43 @@ class FlashcardUpdate(BaseModel):
 
 class FlashcardResponse(BaseModel):
     id: int
+    set_id: int
     front: str
     back: str
     language: str
     mastered: bool
+
+    model_config = {
+        "from_attributes": True,
+    }
+
+
+class FlashcardSetCardCreate(BaseModel):
+    front: str
+    back: str
+    language: str | None = None
+
+
+class FlashcardSetCreate(BaseModel):
+    name: str
+    language: str = "German"
+    source_type: str
+    journal_entry_id: int | None = None
+    flashcards: list[FlashcardSetCardCreate] = Field(default_factory=list)
+
+
+class FlashcardSetUpdate(BaseModel):
+    name: str | None = None
+    language: str | None = None
+
+
+class FlashcardSetResponse(BaseModel):
+    id: int
+    name: str
+    language: str
+    source_type: str
+    journal_entry_id: int | None
+    flashcards: list[FlashcardSetCardCreate] = Field(default_factory=list)
 
     model_config = {
         "from_attributes": True,
