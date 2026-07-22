@@ -5,6 +5,8 @@ from pydantic import BaseModel, Field
 
 class JournalAnalysisRequest(BaseModel):
     text: str
+    native_language: str
+    target_language: str
 
 
 class MistakeResponse(BaseModel):

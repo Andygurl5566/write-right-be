@@ -21,9 +21,11 @@ async def analyze_journal(
 ):
 
     text = data.text
+    native_language = data.native_language
+    target_language = data.target_language 
 
     # AI anlysis of the text
-    analysis = await correct_text(text)
+    analysis = await correct_text(text, native_language, target_language)
     
     #Backend adds start/end indices to each mistake for frontend highlighting
     analysis = add_indices(
